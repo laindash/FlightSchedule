@@ -1110,9 +1110,9 @@
     <widget class="QLabel" name="label_31">
      <property name="geometry">
       <rect>
-       <x>20</x>
+       <x>770</x>
        <y>510</y>
-       <width>1421</width>
+       <width>671</width>
        <height>31</height>
       </rect>
      </property>
@@ -1155,9 +1155,9 @@
     <widget class="Line" name="line_4">
      <property name="geometry">
       <rect>
-       <x>20</x>
+       <x>770</x>
        <y>530</y>
-       <width>1421</width>
+       <width>671</width>
        <height>20</height>
       </rect>
      </property>
@@ -1237,7 +1237,7 @@
     <widget class="QLabel" name="label_32">
      <property name="geometry">
       <rect>
-       <x>20</x>
+       <x>770</x>
        <y>540</y>
        <width>161</width>
        <height>31</height>
@@ -1258,9 +1258,9 @@
     <widget class="QLabel" name="label_28">
      <property name="geometry">
       <rect>
-       <x>200</x>
+       <x>20</x>
        <y>540</y>
-       <width>731</width>
+       <width>741</width>
        <height>31</height>
       </rect>
      </property>
@@ -1279,7 +1279,7 @@
     <widget class="QComboBox" name="flight_num">
      <property name="geometry">
       <rect>
-       <x>20</x>
+       <x>770</x>
        <y>570</y>
        <width>161</width>
        <height>29</height>
@@ -1348,7 +1348,7 @@
     <widget class="QComboBox" name="schedule">
      <property name="geometry">
       <rect>
-       <x>190</x>
+       <x>20</x>
        <y>570</y>
        <width>741</width>
        <height>29</height>
@@ -1666,6 +1666,40 @@
      </property>
      <property name="checkable">
       <bool>false</bool>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_37">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>510</y>
+       <width>741</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>16</pointsize>
+      </font>
+     </property>
+     <property name="text">
+      <string>Параметры (только для ввода)</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignmentFlag::AlignCenter</set>
+     </property>
+    </widget>
+    <widget class="Line" name="line_7">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>530</y>
+       <width>741</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="orientation">
+      <enum>Qt::Orientation::Horizontal</enum>
      </property>
     </widget>
    </widget>

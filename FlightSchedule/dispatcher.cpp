@@ -353,17 +353,6 @@ void Dispatcher::flight_search_btn_clicked() {
 		}
 	}
 
-	if (!_ui->schedule->currentText().isEmpty()) {
-		QString schedule = _ui->schedule->currentText();
-
-		if (!schedule.isEmpty()) {
-			if (condition != "WHERE ") {
-				condition += " AND ";
-			}
-			condition += "аэропорты_отправления.`Город` LIKE '" + schedule.toStdString() + "%'";
-		}
-	}
-
 	if (!_ui->flight_date->currentText().isEmpty()) {
 		QString flight_date = _ui->flight_date->currentText();
 
@@ -409,7 +398,7 @@ void Dispatcher::flight_search_btn_clicked() {
 	}
 
 	if (!(_ui->from->currentText().isEmpty() && _ui->to->currentText().isEmpty() && _ui->when->currentText().isEmpty() && 
-		_ui->schedule->currentText().isEmpty() && _ui->flight_date->currentText().isEmpty() && _ui->status->currentText().isEmpty() &&
+		_ui->flight_date->currentText().isEmpty() && _ui->status->currentText().isEmpty() &&
 		_ui->model_2->currentText().isEmpty() && _ui->flight_num->currentText().isEmpty())) {
 		sql_query += condition + ';';
 	}
@@ -1072,7 +1061,6 @@ void Dispatcher::setupComboBoxes() {
 			аэропорты AS аэропорты_отправления ON расписание.`Точка отправления` = аэропорты_отправления.`id аэропорта` \
 			INNER JOIN \
 			аэропорты AS аэропорты_прибытия ON расписание.`Точка прибытия` = аэропорты_прибытия.`id аэропорта` \
-			WHERE расписание.`id расписания` NOT IN(SELECT рейсы.`Расписание` FROM рейсы) \
 			ORDER BY расписание.`id расписания`;";
 	sql::ResultSet* result = runQuery(sql_query);
 	if (result) {
