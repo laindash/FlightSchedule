@@ -4,7 +4,6 @@
 #include <QtWidgets/QMainWindow>
 #include "ui_admin.h"
 #include "query_result.h"
-#include "admin_queries.h"
 
 
 QT_BEGIN_NAMESPACE
@@ -20,32 +19,32 @@ public:
     ~Admin();
 
 private slots:
-    void airports_btn_clicked();
-    void days_of_week_btn_clicked();
-    void schedule_btn_clicked();
-    void planes_btn_clicked();
-    void statuses_btn_clicked();
-    void sales_btn_clicked();
-    void models_btn_clicked();
-    void flights_btn_clicked();
-    void benefits_btn_clicked();
-    void admin_queries_btn_clicked();
+    void airports_add();
+    void days_of_week_add();
+    void schedule_add();
+    void planes_add();
+    void statuses_add();
+    void sales_add();
+    void models_add();
+    void flights_add();
+    void benefits_add();
+
+    void airports_save();
+    void days_of_week_save();
+    void schedule_save();
+    void planes_save();
+    void statuses_save();
+    void sales_save();
+    void models_save();
+    void flights_save();
+    void benefits_save();
+
+    void saveTableToFile(QTableWidget* tableWidget);
 
 private:
-    Ui::AdminClass* _ui;
-    QueryResult* _query_result;
-    AdminQueries* _admin_queries;
-    
-    void enableAirportsButton();
-    void enableDaysOfWeekButton();
-    void enableScheduleButton();
-    void enablePlanesButton();
-    void enableStatusesButton();
-    void enableSalesButton();
-    void enableModelsButton();
-    void enableFlightsButton();
-    void enableBenefitsButton();
-    void enableAdminQueriesButton();
+    Ui::AdminClass *_ui;
+    QueryResult *_airports = nullptr, * _days_of_week = nullptr, * _schedule = nullptr, * _planes = nullptr, * _statuses = nullptr,
+        * _sales = nullptr, * _models = nullptr, * _flights = nullptr, * _benefits = nullptr;
 };
 
 #endif

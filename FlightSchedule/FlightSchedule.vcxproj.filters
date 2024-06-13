@@ -37,9 +37,6 @@
     <QtUic Include="admin.ui">
       <Filter>Form Files</Filter>
     </QtUic>
-    <QtUic Include="admin_queries.ui">
-      <Filter>Form Files</Filter>
-    </QtUic>
     <QtUic Include="passenger.ui">
       <Filter>Form Files</Filter>
     </QtUic>
@@ -52,15 +49,12 @@
     <QtUic Include="dispatcher.ui">
       <Filter>Form Files</Filter>
     </QtUic>
-    <QtUic Include="dispatcher_queries.ui">
+    <QtUic Include="cashier.ui">
       <Filter>Form Files</Filter>
     </QtUic>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="admin.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="admin_queries.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="passenger.cpp">
@@ -81,15 +75,12 @@
     <ClCompile Include="dispatcher.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="dispatcher_queries.cpp">
+    <ClCompile Include="cashier.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="admin.h">
-      <Filter>Header Files</Filter>
-    </QtMoc>
-    <QtMoc Include="admin_queries.h">
       <Filter>Header Files</Filter>
     </QtMoc>
     <QtMoc Include="passenger.h">
@@ -104,7 +95,7 @@
     <QtMoc Include="dispatcher.h">
       <Filter>Header Files</Filter>
     </QtMoc>
-    <QtMoc Include="dispatcher_queries.h">
+    <QtMoc Include="cashier.h">
       <Filter>Header Files</Filter>
     </QtMoc>
   </ItemGroup>

@@ -6,6 +6,8 @@
 #include "dispatcher.h"
 #include "admin.h"
 #include "passenger.h"
+#include "cashier.h"
+#include <memory>
 
 
 QT_BEGIN_NAMESPACE
@@ -24,16 +26,14 @@ private slots:
     void dispatcher_btn_clicked();
     void admin_btn_clicked();
     void passenger_btn_clicked();
+    void cashier_btn_clicked();
 
 private:
     Ui::AirportScheduleClass* _ui;
-    Dispatcher* _dispatcher;
-    Admin* _admin;
-    Passenger* _passenger;
-
-    void enableDispatcherButton();
-    void enableAdminButton();
-    void enablePassengerButton();
+    std::unique_ptr<Dispatcher> _dispatcher;
+    std::unique_ptr<Admin> _admin;
+    std::unique_ptr<Passenger> _passenger;
+    std::unique_ptr<Cashier> _cashier;
 };
 
 #endif

@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>446</width>
-    <height>312</height>
+    <height>390</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -32,7 +32,7 @@
      <bool>false</bool>
     </property>
     <property name="text">
-     <string>Диспетчер</string>
+     <string>Диспетчер рейсов</string>
     </property>
     <property name="checkable">
      <bool>false</bool>
@@ -42,7 +42,7 @@
     <property name="geometry">
      <rect>
       <x>130</x>
-      <y>140</y>
+      <y>200</y>
       <width>191</width>
       <height>51</height>
      </rect>
@@ -60,7 +60,7 @@
     <property name="geometry">
      <rect>
       <x>130</x>
-      <y>220</y>
+      <y>270</y>
       <width>191</width>
       <height>51</height>
      </rect>
@@ -78,7 +78,7 @@
     <property name="geometry">
      <rect>
       <x>70</x>
-      <y>290</y>
+      <y>350</y>
       <width>311</width>
       <height>16</height>
      </rect>
@@ -103,6 +103,30 @@
     </property>
     <property name="text">
      <string>Выберите пользователя</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="cashier_btn">
+    <property name="geometry">
+     <rect>
+      <x>130</x>
+      <y>130</y>
+      <width>191</width>
+      <height>51</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>16</pointsize>
+     </font>
+    </property>
+    <property name="mouseTracking">
+     <bool>false</bool>
+    </property>
+    <property name="text">
+     <string>Кассир</string>
+    </property>
+    <property name="checkable">
+     <bool>false</bool>
     </property>
    </widget>
   </widget>

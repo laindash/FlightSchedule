@@ -116,36 +116,31 @@
   </ItemGroup>
   <ItemGroup>
     <QtUic Include="admin.ui" />
-    <QtUic Include="admin_queries.ui" />
+    <QtUic Include="cashier.ui" />
     <QtUic Include="passenger.ui" />
     <QtUic Include="airport_schedule.ui" />
     <QtUic Include="query_result.ui" />
     <QtUic Include="dispatcher.ui" />
-    <QtUic Include="dispatcher_queries.ui" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="admin.cpp" />
-    <ClCompile Include="admin_queries.cpp" />
+    <ClCompile Include="cashier.cpp" />
     <ClCompile Include="passenger.cpp" />
     <ClCompile Include="database.cpp" />
     <ClCompile Include="airport_schedule.cpp" />
     <ClCompile Include="query_result.cpp" />
     <ClCompile Include="src.cpp" />
     <ClCompile Include="dispatcher.cpp" />
-    <ClCompile Include="dispatcher_queries.cpp" />
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="admin.h" />
   </ItemGroup>
   <ItemGroup>
-    <QtMoc Include="admin_queries.h" />
-  </ItemGroup>
-  <ItemGroup>
     <QtMoc Include="passenger.h" />
   </ItemGroup>
   <ItemGroup>
+    <QtMoc Include="cashier.h" />
     <ClInclude Include="database.h" />
-    <QtMoc Include="dispatcher_queries.h" />
     <QtMoc Include="dispatcher.h" />
     <QtMoc Include="query_result.h" />
     <QtMoc Include="airport_schedule.h" />

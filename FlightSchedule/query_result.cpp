@@ -7,7 +7,7 @@
 #include <QByteArray>
 #include <QToolBar>
 #include <QContextMenuEvent>
-#include <QInputDialog>
+#include <memory>
 
 
 QueryResult::QueryResult(QWidget* parent) : QMainWindow(parent), _ui(new Ui::QueryResultClass()) {
@@ -18,7 +18,7 @@ QueryResult::QueryResult(QWidget* parent) : QMainWindow(parent), _ui(new Ui::Que
 	setWindowFlags(windowFlags() | Qt::MSWindowsFixedSizeDialogHint);
 	setWindowFlags(windowFlags() & ~(Qt::WindowFullscreenButtonHint | Qt::WindowMaximizeButtonHint));
 	setWindowFlags(windowFlags() & ~Qt::WindowMinMaxButtonsHint);
-	
+
 	// Установка режима изменения размеров секций горизонтального заголовка
 	_ui->output_table->horizontalHeader()->setSectionResizeMode(QHeaderView::Fixed);
 	_ui->output_table->verticalHeader()->setVisible(false);
@@ -39,7 +39,7 @@ QueryResult::QueryResult(QWidget* parent, QString& table_name, QString& primary_
 	_ui->output_table->setSelectionMode(QAbstractItemView::SingleSelection);
 
 	// Создание действия (акции) "Save"
-	QAction* saveAction = new QAction(tr("&Сохранить данные"), this);
+	QAction* saveAction = new QAction(tr("&Сохранить данные в базу"), this);
 	QAction* addRowAction = new QAction(tr("&Добавить строку"), this);
 	QAction* deleteRowAction = new QAction(tr("&Удалить строку"), this);
 
@@ -53,6 +53,36 @@ QueryResult::QueryResult(QWidget* parent, QString& table_name, QString& primary_
 	connect(saveAction, &QAction::triggered, this, &QueryResult::saveDataInDB);
 	connect(addRowAction, &QAction::triggered, this, &QueryResult::addNewRow);
 	connect(deleteRowAction, &QAction::triggered, this, &QueryResult::deleteRow);
+
+	toolBar->setMovable(false);
+
+	_table_name = table_name;
+	_primary_key_column_name = primary_key_column_name;
+}
+
+QueryResult::QueryResult(QWidget* parent, QString& table_name, QString& primary_key_column_name, bool delete_func) : QMainWindow(parent), _ui(new Ui::QueryResultClass()) {
+	// Инициализация главного окна
+	_ui->setupUi(this);
+
+	// Установка флагов размера окна
+	setWindowFlags(windowFlags() | Qt::MSWindowsFixedSizeDialogHint);
+	setWindowFlags(windowFlags() & ~(Qt::WindowFullscreenButtonHint | Qt::WindowMaximizeButtonHint));
+	setWindowFlags(windowFlags() & ~Qt::WindowMinMaxButtonsHint);
+
+	_ui->output_table->verticalHeader()->setVisible(false);
+	_ui->output_table->setSelectionBehavior(QAbstractItemView::SelectRows);
+	_ui->output_table->setSelectionMode(QAbstractItemView::SingleSelection);
+
+	// Создание действия (акции) "Save"
+	QAction* deleteRowAction = new QAction(tr("&Удалить строку"), this);
+
+	// Добавление действия в верхнюю панель
+	QToolBar* toolBar = addToolBar(tr("Сохранить данные"));
+	toolBar->addAction(deleteRowAction);
+
+	// Подключение сигнала triggered() к пользовательской функции
+	connect(deleteRowAction, &QAction::triggered, this, &QueryResult::deleteRowDispatcher);
+
 	toolBar->setMovable(false);
 
 	_table_name = table_name;
@@ -76,7 +106,7 @@ void QueryResult::addNewRow() {
 	item->setTextAlignment(Qt::AlignCenter);
 	item->setFlags(item->flags() & ~Qt::ItemIsEditable);
 	_ui->output_table->setItem(rowCount, 0, item);
-	
+
 	editSize();
 }
 
@@ -89,7 +119,6 @@ void QueryResult::deleteRow() {
 		if (currentRow >= 0) { // Проверка, что выбрана какая-то строка
 			QTableWidgetItem* primaryKeyItem = _ui->output_table->item(currentRow, 0); // Предполагается, что первый столбец содержит первичные ключи
 			if (primaryKeyItem) {
-				bool ok;
 				QString primaryKeyValue = primaryKeyItem->text(); // Получение значения первичного ключа
 				QString deleteQuery = "DELETE FROM " + _table_name + " WHERE " + _primary_key_column_name + " = '" + primaryKeyValue + "';";
 
@@ -118,6 +147,29 @@ void QueryResult::deleteRow() {
 }
 
 
+void QueryResult::deleteRowDispatcher() {
+	QMessageBox::StandardButton reply = QMessageBox::question(this, "Подтверждение", "Вы уверены, что хотите удалить эту строку?", QMessageBox::Yes | QMessageBox::No);
+	if (reply == QMessageBox::Yes) {
+		int currentRow = _ui->output_table->currentRow();
+		if (currentRow >= 0) { // Проверка, что выбрана какая-то строка
+			try {
+				// Удаление выбранной строки из базы данных
+				QString deleteQuery = "DELETE FROM " + _table_name + " WHERE " + _primary_key_column_name + " = '" + QString::number(currentRow + 1) + "';";
+				runQuery(deleteQuery.toStdString());
+				_ui->output_table->removeRow(currentRow);
+
+				// Пересчет и обновление идентификаторов строк в базе данных
+				QString updateQuery = "UPDATE " + _table_name + " SET " + _primary_key_column_name + " = " + _primary_key_column_name + " - 1 WHERE " + _primary_key_column_name + " > " + QString::number(currentRow + 1) + ";";
+				runQuery(updateQuery.toStdString());
+			}
+			catch (const sql::SQLException& e) {
+				QMessageBox::critical(this, "Ошибка", "Ошибка при выполнении запроса: " + QString::fromStdString(e.what()));
+			}
+		}
+	}
+}
+
+
 void QueryResult::addDataToTable(sql::ResultSet* resultSet) {
 	int columnCount = resultSet->getMetaData()->getColumnCount();
 	_ui->output_table->setColumnCount(columnCount);
@@ -139,18 +191,23 @@ void QueryResult::addDataToTable(sql::ResultSet* resultSet) {
 		for (int column = 0; column < columnCount; ++column) {
 			if (resultSet->getMetaData()->getColumnTypeName(column + 1) == "BLOB") {
 				std::istream* blobStream = resultSet->getBlob(column + 1);
-				if (blobStream) {
-					QByteArray blobData;
-					blobData = QByteArray::fromStdString(std::string((std::istreambuf_iterator<char>(*blobStream)), std::istreambuf_iterator<char>()));
+				if (blobStream && !resultSet->isNull(column + 1)) {
+					QByteArray blobData = QByteArray::fromStdString(std::string((std::istreambuf_iterator<char>(*blobStream)), std::istreambuf_iterator<char>()));
 					delete blobStream;
 
 					QPixmap pixmap;
 					pixmap.loadFromData(blobData);
 					QLabel* label = new QLabel();
-					label->setPixmap(pixmap.scaled(150, 150)); // Установка размеров изображения
+					label->setPixmap(pixmap.scaled(150, 150, Qt::KeepAspectRatio, Qt::SmoothTransformation)); // Установка размеров изображения
 					imageHeight = 150;
 					_ui->output_table->setCellWidget(row, column, label);
 					_ui->output_table->setRowHeight(row, imageHeight);
+				}
+				else {
+					// Если фото отсутствует, добавляем текст "Нет фото"
+					QTableWidgetItem* item = new QTableWidgetItem("Нет фото");
+					item->setTextAlignment(Qt::AlignCenter);
+					_ui->output_table->setItem(row, column, item);
 				}
 			}
 			else {
@@ -185,21 +242,19 @@ void QueryResult::saveDataInDB() {
 
 			insertQuery = "UPDATE " + _table_name + " SET `" + columnName + "` = ";
 
-			if (columnName != "Фото изделия") {
-				QTableWidgetItem* item = _ui->output_table->item(row, column);		
-				if (item) {
-					QString value = item->text();
-					item->setTextAlignment(Qt::AlignCenter);
-					insertQuery.append("'" + value + "' ");
-				}
-				else {
-					// Если ячейка пустая, добавляем NULL
-					insertQuery.append("NULL ");
-				}
-				insertQuery += "WHERE (" + _primary_key_column_name + " = " + "'" + QString::number(row + 1) + "'" + ");";
-				// Выполняем SQL-запрос на добавление записи в базу данных
-				runQuery(insertQuery.toStdString());
+			QTableWidgetItem* item = _ui->output_table->item(row, column);
+			if (item) {
+				QString value = item->text();
+				item->setTextAlignment(Qt::AlignCenter);
+				insertQuery.append("'" + value + "' ");
 			}
+			else {
+				// Если ячейка пустая, добавляем NULL
+				insertQuery.append("NULL ");
+			}
+			insertQuery += "WHERE (" + _primary_key_column_name + " = " + "'" + QString::number(row + 1) + "'" + ");";
+			// Выполняем SQL-запрос на добавление записи в базу данных
+			runQuery(insertQuery.toStdString());
 		}
 	}
 	editSize();
@@ -215,7 +270,10 @@ void QueryResult::editSize() {
 	_ui->output_table->resizeColumnsToContents();
 
 	const int maxWidth = 1400;
-	const int maxHeight = 720;
+	const int maxHeight = 450;
+	_ui->output_table->resize(maxWidth, maxHeight);
+
+
 	const int additionalWidth = 5; // Примерное значение для увеличения ширины
 	const int additionalHeight = 40; // Примерное значение для увеличения ширины
 	// Подгоняем размер таблицы под содержимое
@@ -224,16 +282,16 @@ void QueryResult::editSize() {
 
 	if (tableWidth > maxWidth) {
 		tableWidth = maxWidth;
-		tableHeight += 20;
+		tableHeight += 30;
 	}
 	if (tableHeight > maxHeight) {
 		tableHeight = maxHeight;
-		tableWidth += 20;
+		tableWidth += 30;
 	}
 	_ui->output_table->resize(tableWidth, tableHeight);
 
 	if (!_table_name.isEmpty()) {
-		tableHeight += 15;
+		tableHeight += 30;
 	}
 	// Подгоняем размер окна под размер таблицы
 	resize(tableWidth, tableHeight);

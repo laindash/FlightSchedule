@@ -4,7 +4,7 @@
 
 
 AirportSchedule::AirportSchedule(QWidget *parent) : QMainWindow(parent), _ui(new Ui::AirportScheduleClass()), 
-	_dispatcher(nullptr), _admin(nullptr), _passenger(nullptr) {
+	_dispatcher(nullptr), _admin(nullptr), _passenger(nullptr), _cashier(nullptr) {
 
 	// Инициализация главного окна
 	_ui->setupUi(this);
@@ -18,6 +18,7 @@ AirportSchedule::AirportSchedule(QWidget *parent) : QMainWindow(parent), _ui(new
 	connect(_ui->dispatcher_btn, &QPushButton::clicked, this, &AirportSchedule::dispatcher_btn_clicked);
 	connect(_ui->admin_btn, &QPushButton::clicked, this, &AirportSchedule::admin_btn_clicked);
 	connect(_ui->passenger_btn, &QPushButton::clicked, this, &AirportSchedule::passenger_btn_clicked);
+	connect(_ui->cashier_btn, &QPushButton::clicked, this, &AirportSchedule::cashier_btn_clicked);
 }
 
 AirportSchedule::~AirportSchedule() {
@@ -26,51 +27,33 @@ AirportSchedule::~AirportSchedule() {
 
 
 void AirportSchedule::dispatcher_btn_clicked() {
-	_ui->dispatcher_btn->setEnabled(false);
-	this->hide();
-	_dispatcher = new Dispatcher(this);
-
-	// Подключение сигнала destroyed() к слоту, который включает кнопку
-	connect(_dispatcher, &QObject::destroyed, this, &AirportSchedule::enableDispatcherButton);
-	_dispatcher->setAttribute(Qt::WA_DeleteOnClose); //clear memory
+	if (!_dispatcher) {
+		_dispatcher = std::make_unique<Dispatcher>(this);
+	}
 	_dispatcher->show();
-}
-
-void AirportSchedule::enableDispatcherButton() {
-	_ui->dispatcher_btn->setEnabled(true);
-	this->show();
 }
 
 
 void AirportSchedule::admin_btn_clicked() {
-	_ui->admin_btn->setEnabled(false);
-	this->hide();
-	_admin = new Admin(this);
-
-	// Подключение сигнала destroyed() к слоту, который включает кнопку
-	connect(_admin, &QObject::destroyed, this, &AirportSchedule::enableAdminButton);
-	_admin->setAttribute(Qt::WA_DeleteOnClose); //clear memory
+	if (!_admin) {
+		_admin = std::make_unique<Admin>(this);
+	}
 	_admin->show();
-}
-
-void AirportSchedule::enableAdminButton() {
-	_ui->admin_btn->setEnabled(true);
-	this->show();
 }
 
 
 void AirportSchedule::passenger_btn_clicked() {
-	_ui->passenger_btn->setEnabled(false);
-	this->hide();
-	_passenger = new Passenger(this);
-
-	// Подключение сигнала destroyed() к слоту, который включает кнопку
-	connect(_passenger, &QObject::destroyed, this, &AirportSchedule::enablePassengerButton);
-	_passenger->setAttribute(Qt::WA_DeleteOnClose); //clear memory
+	if (!_passenger) {
+		_passenger = std::make_unique<Passenger>(this);
+	}
 	_passenger->show();
 }
 
-void AirportSchedule::enablePassengerButton() {
-	_ui->passenger_btn->setEnabled(true);
-	this->show();
+
+void AirportSchedule::cashier_btn_clicked() {
+	if (!_cashier) {
+		_cashier = std::make_unique<Cashier>(this);
+	}
+	_cashier->show();
 }
+

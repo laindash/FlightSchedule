@@ -22,19 +22,21 @@ class QueryResult : public QMainWindow {
 public:
 	QueryResult(QWidget *parent = nullptr);
 	QueryResult(QWidget* parent, QString& table_name, QString& primary_key_column_name);
+	QueryResult(QWidget* parent, QString& table_name, QString& primary_key_column_name, bool delete_func);
+
 	~QueryResult();
 
 	void addDataToTable(sql::ResultSet* resultSet);
+	Ui::QueryResultClass* _ui;
+	QString _table_name{}, _primary_key_column_name{};
 
 private slots:
 	void saveDataInDB();
 	void addNewRow();
 	void deleteRow();
+	void deleteRowDispatcher();
 
 private:
-	Ui::QueryResultClass *_ui;
-	QString _table_name{}, _primary_key_column_name{};
-
 	void contextMenuEvent(QContextMenuEvent* event);
 	void editSize();
 };
